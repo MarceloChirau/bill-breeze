@@ -8,6 +8,19 @@
 <body>
     <button id="signBtn" type="button" >Sign with Google</button>
     <button id="signOutBtn" type="button" hidden >Sign Out</button>
+    <div class="createUserContainer">
+        <p>New user? click here if you want to create one with email and password: </p>
+        <button type="button" id="signUp">create-user</button>
+        <input type="text" placeholder="email.." id="email" hidden>
+        <input type="password" placeholder="your password.." id="password" hidden>
+        <button type="button" id="createUserBtn" hidden>Submit</button>
+        
+        <p>You are already a user? click here to enter you credentials:</p>
+<button type="button" id="logAlreadyUser">log-user</button>
+<input type="text" placeholder="email.." id="alreadyEmail" hidden>
+<input type="password" placeholder="your password.." id="alreadyPassword" hidden>
+<button type="button" id="logUserBtn" hidden>submit user</button>
+    </div>
 
     <script defer type="module" src="./index.js" ></script>
 </body>
