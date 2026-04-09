@@ -99,6 +99,8 @@ submitBtn?.addEventListener('click',async()=>{
         //making empty the inputs and hide the container:
         emailInput.value="";
         passwordInput.value=""
+        emailInput.hidden=true;
+        passwordInput.hidden=true;
 createUserContainer.hidden=true;
 
         return user;
@@ -130,6 +132,8 @@ logUserBtn?.addEventListener('click',async()=>{
 //hiding everything except the signOut and making the inputs empty:
 alreadyEmailInput.value="";
 alreadyPasswordInput.value="";
+alreadyPasswordInput.hidden=true;
+alreadyEmailInput.hidden=true;
 createUserContainer.hidden=true;
 
         return user;

@@ -7,6 +7,8 @@ import {
   GoogleAuthProvider,
   signOut
 } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -25,6 +27,8 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+
+
 
  export const auth=getAuth();
 const provider = new GoogleAuthProvider();
@@ -68,4 +72,5 @@ return result;
 
   }
 }
+
 
