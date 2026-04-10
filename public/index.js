@@ -21,10 +21,6 @@ const logUserBtn=document.getElementById('logUserBtn');
 const createUserContainer=document.querySelector('.createUserContainer');
 
 
-/*<button type="button" id="logAlreadyUser">log-user</button>
-<input type="text" placeholder="email.." id="alreadyEmail" hidden>
-<input type="password" placeholder="your password.." id="alreadyPassword" hidden>
-<button type="button" id="logUserBtn" hidden>submit user</button>*/
 
 
 if (!signInBtn) {
@@ -35,12 +31,22 @@ if (!signOutBtn) {
 }
 
 signInBtn?.addEventListener('click', async () => {
-    console.log("[ui] sign button clicked");
     try{
 
         const user= await signInFunction();
-        console.log("[ui] signInFunction returned:", user);
-        if (user) console.log('user signed in:', user.email)
+        console.log("signInFunction with google signin returned user:", user);
+        if (user){
+            console.log('user signed in:', user.email)
+            const idToken=await user.getIdToken();
+            await fetch("http://localhost:3000/v1/api/me",{
+                method:"GET",
+                headers:{
+                    "Content-Type":"application/json",
+                    Authorization:`Bearer ${idToken}`,
+                }
+            })
+
+        } 
         else console.log("[ui] sign-in returned null (see error logs above)");
     }catch(err){
         console.log("[ui] sign in failed", err?.code, err?.message, err);
