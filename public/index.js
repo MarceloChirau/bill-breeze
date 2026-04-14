@@ -5,7 +5,9 @@ import {
   signInWithEmailAndPassword
 
   } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-
+// import {getStorage,ref,uploadBytes} from "firebase";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js";
+//https://www.gstatic.com/firebase/12.11.0/firebase-storage.js
 const signInBtn=document.getElementById('signBtn');
 const signOutBtn=document.getElementById('signOutBtn');
 
@@ -20,15 +22,164 @@ const alreadyPasswordInput=document.getElementById('alreadyPassword');
 const logUserBtn=document.getElementById('logUserBtn');
 const createUserContainer=document.querySelector('.createUserContainer');
 
+const inputContainer=document.getElementById('inputContainer');
+const input=document.getElementById('input');
+const inputMsg=document.getElementById('inputMsg');
+const label=document.querySelector('label');
+const getBillBtn=document.getElementById('submitBtn');
+const form=document.querySelector('form');
+
+const previewContainer=document.querySelector('.preview');
+const img=document.createElement('img');
+const iFrame=document.createElement('iframe');
+const cancelBtn=document.createElement('button');
+cancelBtn.classList.add('btn')
+cancelBtn.textContent='Cancel';
+let previewURL;
+
+//managing the preview container :
+previewContainer.style.width='400px';
+previewContainer.style.height='400px';
+previewContainer.style.border='3px  dashed dimgray';
+img.style.width='100%';
+img.style.height='100%';
+iFrame.style.width="100%";
+iFrame.style.height="100%";
+
+//getBillBtn add not allowed untill there is an input.value change
+getBillBtn.style.cursor='not-allowed'
+
+//hide the ugly input button, and decorate the label instead
+input.style.opacity=0;
+label.classList.add('btn');
+
+//cancelFunction:
+function cancelPreview(){
+    previewContainer.innerHTML="";
+    input.value='';
+    inputMsg.textContent='No file has been selected/uploaded yet';
+    cancelBtn.style.display='none';
+    submitBtn.style.disabled=true;
+getBillBtn.style.cursor='not-allowed'
 
 
-
-if (!signInBtn) {
-  console.error("[ui] Could not find #signBtn in the DOM");
 }
-if (!signOutBtn) {
-  console.error("[ui] Could not find #signOutBtn in the DOM");
+
+//if user hits the cancelo btn or esc while he is choosing a file:
+input.addEventListener('cancel',()=>{
+    console.log('User canceled his selection!')
+    cancelPreview();
+})
+
+//and also we attach the cancelPreview function to the cancel btn:
+cancelBtn.addEventListener('click',()=>{
+    console.log('User canceled his selection!')
+
+    cancelPreview();
+
+
+})
+
+
+//just to preview the file before to upload and also get info out of it with the help of ai :
+input.addEventListener('change',()=>{
+    const curFiles=input.files?.[0];
+if (curFiles.length===0){
+    inputMsg.textContent="No file has been selected/uploaded yet";
 }
+
+//making sure the file is one of these extensions:
+const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+if(!validTypes.includes(curFiles.type)){
+    alert("Please upload a valid Image or pdf.")
+    input.value='';
+}
+
+
+if(curFiles.type==='application/pdf'){
+    // remove the img and URL to avoid leaking memory
+    if(iFrame.src) URL.revokeObjectURL(iFrame.src);
+    if(img.src) URL.revokeObjectURL(img.src)
+        
+        previewURL=URL.createObjectURL(curFiles);
+    iFrame.src=previewURL;
+previewContainer.appendChild(iFrame);
+inputMsg.textContent=`File has been selected:${curFiles.name} ${curFiles.type}, ${curFiles.size} bytes `;
+    
+     // activate the submit btn:
+     getBillBtn.disabled=false;
+     
+     // since there is a proper file we will add a cancel btn, in case user changes mind:
+     form.appendChild(cancelBtn);
+     cancelBtn.style.display='block';
+
+}else{
+    // remove the img and URL to avoid leaking memory
+    if(iFrame.src) URL.revokeObjectURL(iFrame.src);
+    if(img.src) URL.revokeObjectURL(img.src)
+    //storing the temporary local url and use as src in img:
+     previewURL=URL.createObjectURL(curFiles);
+     img.src=previewURL;
+     previewContainer.appendChild(img);
+     inputMsg.textContent=`File has been selected:${curFiles.name} ${curFiles.type}, ${curFiles.size} bytes `;
+    
+     // activate the submit btn:
+     getBillBtn.disabled=false;
+     
+     // since there is a proper file we will add a cancel btn, in case user changes mind:
+     form.appendChild(cancelBtn);
+     cancelBtn.style.display='block';
+
+}
+getBillBtn.style.cursor='pointer'
+
+
+})
+
+
+
+
+
+form.addEventListener('submit',async(e)=>{
+    e.preventDefault();
+    const file=input.files[0];
+
+    if(!file){
+        console.log('There is no file uploaded');
+        return;
+    }
+
+const storage=getStorage();
+const electricityRef=ref(storage,`electricity/${file.name}`);
+try{
+
+    await uploadBytes(electricityRef,file);
+
+    // remove the img and URL to avoid leaking memory
+    URL.revokeObjectURL(previewURL);
+        if(previewContainer.querySelector('img')) previewContainer.removeChild(img)
+        if(previewContainer.querySelector('iframe')) previewContainer.removeChild(iFrame);
+        if(form.contains(cancelBtn)) cancelBtn.style.display='none';
+    
+    //update the input msg:
+    inputMsg.textContent="File has been submited/saved"
+    setTimeout(()=>{
+    inputMsg.textContent="Ready for another submit!";
+
+    },3000)
+    console.log('the form is submited!') 
+
+}catch(err){
+console.error("error:",err)
+}
+
+})
+
+
+
+
+
+
 
 signInBtn?.addEventListener('click', async () => {
     try{
@@ -45,9 +196,13 @@ signInBtn?.addEventListener('click', async () => {
                     Authorization:`Bearer ${idToken}`,
                 }
             })
+            // createUserContainer.hidden=true;
+            // createUserContainer.style.display=none;
+
 
         } 
         else console.log("[ui] sign-in returned null (see error logs above)");
+
     }catch(err){
         console.log("[ui] sign in failed", err?.code, err?.message, err);
     }
@@ -64,7 +219,8 @@ signOutBtn?.addEventListener('click',async()=>{
             console.log('this is what ok has inside:',ok)
             console.log('log out succeded!')
             console.log('showing the container with other options:')
-createUserContainer.hidden=false;
+// createUserContainer.hidden=false;
+
 
         }
     }catch(error){
@@ -79,10 +235,18 @@ onAuthStateChanged(auth,(user)=>{
     if(user){
         signInBtn.hidden=true;
         signOutBtn.hidden=false;
+        inputContainer.hidden=false;
+        // createUserContainer.hidden=true;
+        createUserContainer.style.display="none";
+
+
     }else{
 
         signInBtn.hidden=false;
         signOutBtn.hidden=true; 
+        inputContainer.hidden=true;
+        createUserContainer.hidden=false;
+
     }
 })
 
@@ -102,12 +266,25 @@ submitBtn?.addEventListener('click',async()=>{
         const user=result.user;
         console.log('user is creared:',user)
         console.log('user id:',user?.uid)
+        console.log('user signed in:', user.email)
+
+        const idToken=await user.getIdToken();
+        await fetch("http://localhost:3000/v1/api/me",{
+            method:"GET",
+            headers:{
+                "Content-Type":"application/json",
+                Authorization:`Bearer ${idToken}`,
+            }
+        })
+
         //making empty the inputs and hide the container:
         emailInput.value="";
         passwordInput.value=""
         emailInput.hidden=true;
         passwordInput.hidden=true;
-createUserContainer.hidden=true;
+// createUserContainer.hidden=true;
+// inputContainer.hidden=false;
+
 
         return user;
     }catch(error){
@@ -135,12 +312,25 @@ logUserBtn?.addEventListener('click',async()=>{
         const user=result.user;
         console.log('already an existant user:',user);
         console.log('this user exists and his id is :',user.uid)
+
+        const idToken=await user.getIdToken();
+        await fetch("http://localhost:3000/v1/api/me",{
+            method:"GET",
+            headers:{
+                "Content-Type":"application/json",
+                Authorization:`Bearer ${idToken}`,
+            }
+        })
+
+
+
 //hiding everything except the signOut and making the inputs empty:
 alreadyEmailInput.value="";
 alreadyPasswordInput.value="";
 alreadyPasswordInput.hidden=true;
 alreadyEmailInput.hidden=true;
-createUserContainer.hidden=true;
+// createUserContainer.hidden=true;
+
 
         return user;
     }catch(err){
@@ -149,6 +339,28 @@ createUserContainer.hidden=true;
     }
 })
 
+
+//create storage:
+
+
+
+// const fullpath=electricityRef.fullpath;
+// const name=electricityRef.name;
+// const imageRef=electricityRef.parent;
+
+
+
+
+
+
+
+
+
+
+
+
+
 //email: marcelochirau@gmail.com
 // password: 123swd3
 // uid: RQJ7kdSTmMW0AIFTcs2UMNPoMq63
+

@@ -4,23 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BillBreeze</title>
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <button id="signBtn" type="button" >Sign with Google</button>
-    <button id="signOutBtn" type="button" hidden >Sign Out</button>
-    <div class="createUserContainer">
-        <p>New user? click here if you want to create one with email and password: </p>
-        <button type="button" id="signUp">create-user</button>
-        <input type="text" placeholder="email.." id="email" hidden>
-        <input type="password" placeholder="your password.." id="password" hidden>
-        <button type="button" id="createUserBtn" hidden>Submit</button>
-        
-        <p>You are already a user? click here to enter you credentials:</p>
-<button type="button" id="logAlreadyUser">log-user</button>
-<input type="text" placeholder="email.." id="alreadyEmail" hidden>
-<input type="password" placeholder="your password.." id="alreadyPassword" hidden>
-<button type="button" id="logUserBtn" hidden>submit user</button>
+    <div class="introContainer">
+
+        <button class="btn" id="signBtn" type="button" >Sign with Google</button>
+        <button class="btn" id="signOutBtn" type="button" hidden >Sign Out</button>
+        <div class="createUserContainer">
+            <p>New user? click here if you want to create one with email and password: </p>
+            <button class="btn" type="button" id="signUp">create-user</button>
+            <input class="btn" type="text" placeholder="email.." id="email" hidden>
+            <input type="password" placeholder="your password.." id="password" hidden>
+            <button class="btn" type="button" id="createUserBtn" hidden>Submit</button>
+            
+            <p>You are already a user? click here to enter you credentials:</p>
+    <button class="btn" type="button" id="logAlreadyUser">log-user</button>
+    <input type="text" placeholder="email.." id="alreadyEmail" hidden>
+    <input type="password" placeholder="your password.." id="alreadyPassword" hidden>
+    <button class="btn" type="button" id="logUserBtn" hidden>submit user</button>
+        </div>
+
     </div>
+
+<div id="inputContainer" hidden>
+    <form class="form" method="post" >
+
+        <label for="input">Click to upload your bill</label>
+        <input type="file" accept="image/*,application/pdf" id="input">
+        <p id="inputMsg" >No file has been selected/uploaded yet </p>
+        <div class="preview">
+
+        </div>
+
+        <button class="btn" id="submitBtn" type="submit" disabled>Submit</button>
+    </form>
+
+</div>
 
     <script defer type="module" src="./index.js" ></script>
 </body>
