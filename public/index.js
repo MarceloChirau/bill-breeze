@@ -6,7 +6,7 @@ import {
 
   } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 // import {getStorage,ref,uploadBytes} from "firebase";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js";
+import { getStorage, ref, uploadBytes} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js";
 //https://www.gstatic.com/firebase/12.11.0/firebase-storage.js
 const signInBtn=document.getElementById('signBtn');
 const signOutBtn=document.getElementById('signOutBtn');
@@ -142,7 +142,9 @@ getBillBtn.style.cursor='pointer'
 
 form.addEventListener('submit',async(e)=>{
     e.preventDefault();
+    if(!auth.currentUser)return;
     const file=input.files[0];
+    const mimeType=file.type;
 
     if(!file){
         console.log('There is no file uploaded');
@@ -150,11 +152,33 @@ form.addEventListener('submit',async(e)=>{
     }
 
 const storage=getStorage();
-const electricityRef=ref(storage,`electricity/${file.name}`);
+const user=auth.currentUser;
+const uid=user.uid;
+const ts = new Date().toISOString().replace(/[:.]/g, "-");
+const billRef=ref(storage,`users/${uid}/${ts}/${file.name}`);
+
+
+const storagePath=billRef.fullPath;
+console.log('fullpath:',storagePath);
 try{
 
-    await uploadBytes(electricityRef,file);
+    await uploadBytes(billRef,file,{contentType:file.type});
+    // console.log('storageRef:',snapshot.ref.fullPath)
+const idToken=await auth.currentUser.getIdToken();
 
+const res=await fetch("/v1/api/ai/extract-bill",{
+    method:"POST",
+    headers:{Authorization:`Bearer ${idToken}`,
+"Content-Type":"application/json"},
+body:JSON.stringify({storagePath})
+})
+const data=await res.json(); // or .text() just to see in more human way
+if(!res.ok){
+    console.error("AI endpoint failed:",data);
+    return;
+}
+//let's see the actuall response:
+console.log("data:",data);
     // remove the img and URL to avoid leaking memory
     URL.revokeObjectURL(previewURL);
         if(previewContainer.querySelector('img')) previewContainer.removeChild(img)

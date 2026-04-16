@@ -2,6 +2,7 @@ import express from 'express';
 const app=express();
 import cors from 'cors';
 import me from './routes/meRoutes.js'
+import ai from './routes/aiRoutes.js'
 import path from "path";
 import { fileURLToPath } from 'url';
 
@@ -14,8 +15,9 @@ app.use(express.json());
 app.use(cors());
 
 app.use('/v1/api/',me);
+app.use('/v1/api/ai',ai);
 
-
+///v1/api/ai/extract-bill
 
 
 
