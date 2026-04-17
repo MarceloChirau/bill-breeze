@@ -7,6 +7,7 @@ import {
   } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 // import {getStorage,ref,uploadBytes} from "firebase";
 import { getStorage, ref, uploadBytes} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js";
+import {renderExtractedBill} from './renderExtractedBill.js'
 //https://www.gstatic.com/firebase/12.11.0/firebase-storage.js
 const signInBtn=document.getElementById('signBtn');
 const signOutBtn=document.getElementById('signOutBtn');
@@ -33,6 +34,8 @@ const previewContainer=document.querySelector('.preview');
 const img=document.createElement('img');
 const iFrame=document.createElement('iframe');
 const cancelBtn=document.createElement('button');
+const infoOutputContainer=document.querySelector('.infoOutputContainer');
+const loading=document.getElementById("loading");
 cancelBtn.classList.add('btn')
 cancelBtn.textContent='Cancel';
 let previewURL;
@@ -142,6 +145,7 @@ getBillBtn.style.cursor='pointer'
 
 form.addEventListener('submit',async(e)=>{
     e.preventDefault();
+    loading.hidden=false;
     if(!auth.currentUser)return;
     const file=input.files[0];
     const mimeType=file.type;
@@ -172,13 +176,22 @@ const res=await fetch("/v1/api/ai/extract-bill",{
 "Content-Type":"application/json"},
 body:JSON.stringify({storagePath})
 })
-const data=await res.json(); // or .text() just to see in more human way
+const data=await res.json(); 
+loading.hidden=true;
+if(!data) return;
+const aiText=data.data;
+const jsonMatch = aiText.match(/```json\s?([\s\S]*?)\s?```/) || aiText.match(/```([\s\S]*?)\s?```/);
+const cleanData = jsonMatch ? jsonMatch[1].trim() : aiText.trim();
+
+const obj=JSON.parse(cleanData);
+//here will use renderExtractedBill 
+renderExtractedBill(infoOutputContainer,obj);
 if(!res.ok){
     console.error("AI endpoint failed:",data);
     return;
 }
 //let's see the actuall response:
-console.log("data:",data);
+// console.log("data:",data);
     // remove the img and URL to avoid leaking memory
     URL.revokeObjectURL(previewURL);
         if(previewContainer.querySelector('img')) previewContainer.removeChild(img)
