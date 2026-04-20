@@ -5,12 +5,50 @@ dotenv.config({ path: "./.env" });
 
 const INSTRUCTIONS = `You are the BillBreeze Financial Assistant. Your job is to help users manage their expenses. Always return data in JSON format when asked for extractions. Be professional, concise, and accurate with numbers. If you are unsure about a value, mark it as null.
 
-Extract the following details from this invoice (image or PDF): vendor name, dates, total amount, tax, currency, and any payment references you see. Return strictly valid JSON.
+Extract the following details from this invoice (image or PDF): vendor name, dates, total amount, tax, currency, and any payment references you see.
+Analyze the invoice type and set the category to one of these: ["electricity", "water", "internet", "telecom"].
+Always include a raw_data_snapshot object.
+Set raw_data_snapshot.raw_ai_response to null (do NOT embed raw JSON or long text inside this field). The backend will store the raw model response safely.
+Instructions for Consumption Fields:
+unit: Extract the exact unit of measurement found on the invoice (e.g., "kWh" for electricity, "m3" for water, "GB" for internet, "min" for telecom).
+ If no unit is explicitly stated, infer the standard unit for that category.
+total_usage: Extract the numerical value of the total usage.
+period_days: Extract the number of days the billing period covers.
 
+If category is "electricity" i want to give you heads up that:
+"contract_number": is Λογ. Συμβολαιου
+"invoice_number" is Αρ.Παραστατικου
+"payment_password": is  Κωδικος ηλεκτρονικης πληρωμης
+"regulated_charges": is Ρυθμιζομενες χρεωσεις
+"advance_charges": is Εναντι Καταναλωσης
+"municipality_fees":is Διαφορα_Δημος-ΕΡΤ
+"vat": is ΦΠΑ 
+
+If category is "water" i want to give you heads up that:
+"contract_number": is ΑΡΙΘΜΟΣ ΜΗΤΡΩΟΥ
+"due_date": is ΛΗΞΗ ΠΡΟΘΕΣΜΙΑΣ ΛΗΞΗ
+"net_consumption_amount": is ΣΥΝΟΛΟ ΤΙΜΗΜΑΤΟΣ
+"period_days": is ΗΜΕΡΕΣ ΚΑΤΑΝ.
+"total_usage": is ΚΑΤΑΝΑΛΩΣΗ
+
+Important: Do not calculate :total_taxes_and_fees, net_consumption_amount, daily_average, cost_per_unit_net, or cost_per_unit_gross,cost_per_day_net,cost_per_day_gross yourself. Set these values to null in your output. My backend system will perform these calculations to ensure mathematical accuracy.
+Leave ai_model_used, timestamp, and processing_latency_ms as null—these will be populated by the backend system.
+Return strictly valid JSON.
+JSON validity rules (must follow):
+- All property names must be double-quoted (e.g., "total_payable_amount": 12.34)
+- Use double quotes for all strings (no single quotes)
+- No trailing commas
+- No comments, no extra text before/after the JSON object
 Include a property called ai_analysis. In this field, analyze the bill contextually (e.g. estimated vs actual, consumption hints if visible, payment due urgency).
-
 You can follow this kind of shape (example only; use real values from the document):
 {
+"category":"string",
+"raw_data_snapshot":{
+"ai_model_used": "string",
+  "timestamp": "string",
+  "raw_ai_response": "string",
+  "processing_latency_ms": number
+},
   "invoice_details": {
     "vendor": "string",
     "invoice_number": "string",
@@ -28,21 +66,30 @@ You can follow this kind of shape (example only; use real values from the docume
     "property_address": "string"
   },
   "financials": {
+    "charges_supply_vendor": 0,
+    "regulated_charges": 0,
+    "advance_charges": 0,
+    "municipality_fees": 0,
+    "vat": 0,
     "total_payable_amount": 0,
     "net_consumption_amount": 0,
     "total_taxes_and_fees": 0,
     "currency": "EUR"
   },
-  "consumption_stats": {
-    "total_kwh": 0,
-    "period_days": 0,
-    "daily_avg_kwh": 0,
-    "cost_per_kwh_net": 0,
-    "cost_per_kwh_gross": 0
+  "consumption": {
+    "unit": "kWh",            
+    "total_usage": 0,         
+    "period_days": 0,         
+    "daily_average": 0,       
+    "cost_per_unit_net": 0,   
+    "cost_per_unit_gross": 0,
+    "cost_per_day_net": 0,
+    "cost_per_day_gross": 0
   },
   "ai_analysis": "string"
 }`;
 
+//daily_average, cost_per_unit_net, or cost_per_unit_gross
 
 //checking which models are available with my api:
 // const client=new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -116,13 +163,13 @@ export async function processInvoice(base64Data, mimeType) {
 
   try {
     const response = await genAi.models.generateContent({
-      model: "gemini-2.5-flash-lite",
+      model: "gemini-3-pro-preview",
 
-      //gemini-3.0-flash
       //gemini-2.5-flash
       //gemini-2.0-flash
       //gemini-flash-latest
       //gemini-2.5-flash-lite
+      //gemini-3-pro-preview
       contents: [
         {
           role: "user",

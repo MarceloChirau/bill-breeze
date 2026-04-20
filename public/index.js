@@ -178,18 +178,22 @@ body:JSON.stringify({storagePath})
 })
 const data=await res.json(); 
 loading.hidden=true;
-if(!data) return;
-const aiText=data.data;
-const jsonMatch = aiText.match(/```json\s?([\s\S]*?)\s?```/) || aiText.match(/```([\s\S]*?)\s?```/);
-const cleanData = jsonMatch ? jsonMatch[1].trim() : aiText.trim();
-
-const obj=JSON.parse(cleanData);
-//here will use renderExtractedBill 
-renderExtractedBill(infoOutputContainer,obj);
 if(!res.ok){
-    console.error("AI endpoint failed:",data);
+    console.error("AI endpoint failed:", data);
+    infoOutputContainer.textContent = data?.msg ?? "Extraction failed.";
     return;
 }
+const aiText=data.data;
+console.log('this aitext in frontend:',aiText);
+console.log('this aitext.category in frontend:',aiText.category);
+
+// console.log('type of aiText:',typeof aiText);
+// const jsonMatch = aiText.match(/```json\s?([\s\S]*?)\s?```/) || aiText.match(/```([\s\S]*?)\s?```/);
+// const cleanData = jsonMatch ? jsonMatch[1].trim() : aiText.trim();
+
+// const obj=JSON.parse(cleanData);
+//here will use renderExtractedBill 
+renderExtractedBill(infoOutputContainer,aiText);
 //let's see the actuall response:
 // console.log("data:",data);
     // remove the img and URL to avoid leaking memory

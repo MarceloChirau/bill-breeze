@@ -1,35 +1,57 @@
 
 export function renderExtractedBill(containerEl,extractedJson){
+    let category=extractedJson.category ? extractedJson.category.toLowerCase() : "unknown";
+    let unit = "unknown unit";
+switch (category){
+    case "electricity":
+        unit = "kWh";
+        break;
+        case "water":
+            unit = "m3";
+            break;
+            case "internet":
+                unit = "GB";
+                break;
+                case "telecom":
+                    unit = "min";
+                    break;
+                    default:
+                        unit = "unknown unit"
+}
+
 containerEl.innerHTML=`
 <h2>Importand Info</h2>
 <h3>Invoice Details:</h3>
-<p>Vendor:${extractedJson.invoice_details.vendor ?? "Unknown"}</p>
-<p>Invoice Number:${extractedJson.invoice_details.invoice_number ?? "Unknown"}</p>
-<p>Invoice Type:${extractedJson.invoice_details.invoice_type ?? "Unknown"}</p>
-<p>Issue Date:${extractedJson.invoice_details.issue_date ?? "Unknown"}</p>
-<p>Due Date:${extractedJson.invoice_details.due_date ?? "Unknown"}</p>
-<p>Payment Password:${extractedJson.invoice_details.payment_password ?? "Unknown"}</p>
-<p>Next Measurement Date:${extractedJson.invoice_details.next_measurement_date ?? "Unknown"}</p>
-<p>Provider Number:${extractedJson.invoice_details.provider_number ?? "Unknown"}</p>
-<p>Contract Number:${extractedJson.invoice_details.contract_number ?? "Unknown"}</p><br>
+<h4>Category:${extractedJson.category}</h4>
+<p>Vendor:${extractedJson.invoice_details?.vendor ?? "Unknown"}</p>
+<p>Invoice Number:${extractedJson.invoice_details?.invoice_number ?? "Unknown"}</p>
+<p>Invoice Type:${extractedJson.invoice_details?.invoice_type ?? "Unknown"}</p>
+<p>Issue Date:${extractedJson.invoice_details?.issue_date ?? "Unknown"}</p>
+<p>Due Date:${extractedJson.invoice_details?.due_date ?? "Unknown"}</p>
+<p>Payment Password:${extractedJson.invoice_details?.payment_password ?? "Unknown"}</p>
+<p>Next Measurement Date:${extractedJson.invoice_details?.next_measurement_date ?? "Unknown"}</p>
+<p>Provider Number:${extractedJson.invoice_details?.provider_number ?? "Unknown"}</p>
+<p>Contract Number:${extractedJson.invoice_details?.contract_number ?? "Unknown"}</p><br>
 
 <h3>Customer Details:</h3>
-<p>Full Name:${extractedJson.customer.full_name ?? "Unkown"}</p>
-<p>Address:${extractedJson.customer.address ?? "Unkown"}</p>
-<p>Property Address:${extractedJson.customer.property_address ?? "Unkown"}</p><br>
+<p>Full Name:${extractedJson.customer?.full_name ?? "Unkown"}</p>
+<p>Address:${extractedJson.customer?.address ?? "Unkown"}</p>
+<p>Property Address:${extractedJson.customer?.property_address ?? "Unkown"}</p><br>
 
 <h3>Financials:</h3>
-<p>Total Payable Amount:${extractedJson.financials.total_payable_amount ?? "Unkown"} €</p>
-<p>Net Consumption Amount:${extractedJson.financials.net_consumption_amount ?? "Unkown"} €</p>
-<p>Total Taxes & Fees:${extractedJson.financials.total_taxes_and_fees ?? "Unkown"} €</p>
-<p>Currency:${extractedJson.financials.currency ?? "Unkown"} </p><br>
+<p>Total Payable Amount:${extractedJson.financials?.total_payable_amount ?? "Unkown"} €</p>
+<p>Net Consumption Amount:${extractedJson.financials?.net_consumption_amount ?? "Unkown"} €</p>
+<p>Total Taxes & Fees:${extractedJson.financials?.total_taxes_and_fees ?? "Unkown"} €</p>
+<p>Currency:${extractedJson.financials?.currency ?? "Unkown"} </p><br>
 
 <h3>Consumption Stats:</h3>
-<p>Total Kwh:${extractedJson.consumption_stats.total_kwh ?? "Unkown"} </p>
-<p>Period Days:${extractedJson.consumption_stats.period_days ?? "Unkown"} </p>
-<p>Daily Average Kwh:${extractedJson.consumption_stats.daily_avg_kwh ?? "Unkown"} </p>
-<p>Cost Per Kwh Net:${extractedJson.consumption_stats.cost_per_kwh_net ?? "Unkown"} </p>
-<p>Cost Per Kwh Gross:${extractedJson.consumption_stats.cost_per_kwh_gross ?? "Unkown"} </p><br>
+<p>Total:${extractedJson.consumption?.total_usage ?? "Unkown"} ${unit}</p>
+<p>Period Days:${extractedJson.consumption?.period_days ?? "Unkown"} </p>
+<p>Daily Average :${extractedJson.consumption?.daily_average ?? "Unkown"} ${unit}</p>
+<p>Cost Per Unit Net:${extractedJson.consumption?.cost_per_unit_net ?? "Unkown"} €</p>
+<p>Cost Per Unit Gross:${extractedJson.consumption?.cost_per_unit_gross ?? "Unkown"} €</p>
+<p>Cost Per Day Net:${extractedJson.consumption?.cost_per_day_net ?? "Unkown"}  €</p>
+<p>Cost Per Day Gross:${extractedJson.consumption?.cost_per_day_gross ?? "Unkown"} €</p><br>
 
 <h3>Ai Analysis:</h3>
 <p id="ai_analysis" >${extractedJson.ai_analysis}</p>
