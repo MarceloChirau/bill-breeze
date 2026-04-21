@@ -163,13 +163,15 @@ export async function processInvoice(base64Data, mimeType) {
 
   try {
     const response = await genAi.models.generateContent({
-      model: "gemini-3-pro-preview",
+      model: "gemini-flash-lite-latest",
 
       //gemini-2.5-flash
       //gemini-2.0-flash
       //gemini-flash-latest
       //gemini-2.5-flash-lite
       //gemini-3-pro-preview
+      //gemma-3-1b-it
+      //gemini-embedding-2-preview
       contents: [
         {
           role: "user",
