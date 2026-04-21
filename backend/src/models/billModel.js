@@ -13,7 +13,12 @@ const billSchema=new mongoose.Schema({
     },
     "invoice_details":{
         "vendor":String,
-        "invoice_number":String,
+        "invoice_number":{
+            type:String,
+            unique:[true,"There is already another invoice with this number"],
+            required:[true,'every invoice should have a number']
+
+        },
         "invoice_type":String,
         "issue_date": Date,
     "due_date": Date,

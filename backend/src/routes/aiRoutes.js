@@ -1,11 +1,11 @@
 import express from 'express';
 const ai=express.Router();
 import { requireAuth } from '../middleware/requireAuth.js';
-import {extractInfoController} from '../controllers/aiController.js'
+import {extractInfoController,showAllBillsController} from '../controllers/aiController.js'
 
 ai.route('/extract-bill')
 .post(requireAuth,extractInfoController)
-
+.get(requireAuth,showAllBillsController);
 
 
 
