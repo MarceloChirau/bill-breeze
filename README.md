@@ -115,3 +115,9 @@ The backend runs on `http://localhost:3000`.
 ###### Output 
 ![Output from ai](./images/output.png)
 
+###### Live Demo:
+**Visit BillBreeze on Render**
+[BillBreeze](https://bill-breeze.onrender.com)
+**Note** This project is hosted on Render's free tier. If the site has been inactive, it may take 30-60 seconds for the server to wake up when you first visit.Please be patient while it initializes!
+
+
