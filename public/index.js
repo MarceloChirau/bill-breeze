@@ -230,7 +230,7 @@ signInBtn?.addEventListener('click', async () => {
         if (user){
             console.log('user signed in:', user.email)
             const idToken=await user.getIdToken();
-            await fetch("http://localhost:3000/v1/api/me",{
+            await fetch("/v1/api/me",{
                 method:"GET",
                 headers:{
                     "Content-Type":"application/json",
@@ -310,7 +310,7 @@ submitBtn?.addEventListener('click',async()=>{
         console.log('user signed in:', user.email)
 
         const idToken=await user.getIdToken();
-        await fetch("http://localhost:3000/v1/api/me",{
+        await fetch("/v1/api/me",{
             method:"GET",
             headers:{
                 "Content-Type":"application/json",
@@ -355,7 +355,7 @@ logUserBtn?.addEventListener('click',async()=>{
         console.log('this user exists and his id is :',user.uid)
 
         const idToken=await user.getIdToken();
-        await fetch("http://localhost:3000/v1/api/me",{
+        await fetch("/v1/api/me",{
             method:"GET",
             headers:{
                 "Content-Type":"application/json",
