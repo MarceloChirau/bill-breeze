@@ -1,12 +1,6 @@
 # Project Title: BillBreeze
 User uploads utility bill like electricity,water,telecom and internet and ai extracts data from them. It saves time, there is ability to organize further the bills and  user gains financial insights without manual data entry.
 
-## Tech Stack:
-* Frontend: Vanilla Javascript , HTML and CSS, no framework.
-* Backend: Node.js with Express.js as framework.
-* AI/LLM:GoogleGenAI with configurable model because i am on free tier, so currently i use  gemini-2.5-flash.
-* Database: MongoDB.
-* Cloud/Auth: Firebase/Firestore
 
 ## Tech stack
 
@@ -93,8 +87,6 @@ The backend runs on `http://localhost:3000`.
 
 ## How it works
 
-![User uploaded utility bill](./images/user_upload_utility_bill.png)
-
 1. **Auth**: User signs in with Firebase Auth.
 2. **Upload**: The bill file is uploaded to **Firebase Storage** under a user-scoped path like `users/{uid}/...`.
 3. **Extract**: Frontend calls `POST /v1/api/ai/extract-bill` with `{ "storagePath": "..." }`. The backend downloads the file from Storage and sends it to Gemini with strict JSON extraction instructions.
@@ -118,6 +110,6 @@ The backend runs on `http://localhost:3000`.
 ###### Live Demo:
 **Visit BillBreeze on Render**
 [BillBreeze](https://bill-breeze.onrender.com)
-**Note** This project is hosted on Render's free tier. If the site has been inactive, it may take 30-60 seconds for the server to wake up when you first visit.Please be patient while it initializes!
+**Note** :this project is hosted on Render's free tier. If the site has been inactive, it may take 30-60 seconds for the server to wake up when you first visit.Please be patient while it initializes!
 
 
