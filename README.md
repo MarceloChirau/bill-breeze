@@ -110,6 +110,6 @@ The backend runs on `http://localhost:3000`.
 ###### Live Demo:
 **Visit BillBreeze on Render**
 [BillBreeze](https://bill-breeze.onrender.com)
-**Note** :this project is hosted on Render's free tier. If the site has been inactive, it may take 30-60 seconds for the server to wake up when you first visit.Please be patient while it initializes!
+  **Note** :this project is hosted on Render's free tier. If the site has been inactive, it may take 30-60 seconds for the server to wake up when you first visit.Please be patient while it initializes!
 
 
