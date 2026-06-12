@@ -1,10 +1,13 @@
 # Project Title: BillBreeze
 User uploads utility bill like electricity,water,telecom and internet and ai extracts data from them. It saves time, there is ability to organize further the bills and  user gains financial insights without manual data entry.
 
+## Click to watch a video demo below:
+[![BillBreeze Demo](https://img.youtube.com/vi/-lmAZ7BMJEA/maxresdefault.jpg)](https://youtu.be/-lmAZ7BMJEA)
+
 
 ## Tech stack
 
-- **Frontend**: Vanilla JavaScript, HTML, CSS (no framework)
+- **Frontend**: Vanilla JavaScript, HTML, Tailwind CSS
 - **Backend**: Node.js + Express
 - **AI/LLM**: Google Gemini via `@google/genai` (model is configurable; current default is set in `backend/src/aiClient.js`)
 - **Database**: MongoDB (Mongoose)
@@ -95,17 +98,20 @@ The backend runs on `http://localhost:3000`.
 
 ## Screenshots
 
-### Dashboard preview
+### User to sign in or log in:
 
-![Dashboard View](./images/first_pic.png)
+![User to sign in or log in:](assets/billBreeze-user-to-signIn-or-logIn.png)
 
-### User Uploads Utility bill
+### User Logged in:
 
-![User uploads](./images/user_upload_utility_bill.png)
+![User Logged in](assets/billBreeze-once-user-logged.png)
 
 
-###### Output 
-![Output from ai](./images/output.png)
+### User uploaded bill:
+![User uploaded bill](assets/billBreeze-user-uploaded-bill.png)
+
+### Ai analysed the bill and outputed the result:
+![Ai analysed the bill and outputed the result](assets/billBreeze-analyzed-bill.png)
 
 ###### Live Demo:
 **Visit BillBreeze on Render**
