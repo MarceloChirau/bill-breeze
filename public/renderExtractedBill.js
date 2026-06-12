@@ -1,96 +1,77 @@
+export function renderExtractedBill(containerEl, extractedJson) {
+  const category = extractedJson.category?.toLowerCase() ?? 'unknown';
 
-export function renderExtractedBill(containerEl,extractedJson){
-    let category=extractedJson.category ? extractedJson.category.toLowerCase() : "unknown";
-    let unit = "unknown unit";
-switch (category){
-    case "electricity":
-        unit = "kWh";
-        break;
-        case "water":
-            unit = "m3";
-            break;
-            case "internet":
-                unit = "GB";
-                break;
-                case "telecom":
-                    unit = "min";
-                    break;
-                    default:
-                        unit = "unknown unit"
+  const units = { electricity: 'kWh', water: 'm³', internet: 'GB', telecom: 'min' };
+  const unit = units[category] ?? 'units';
+
+  const val = (v) => v ?? '—';
+  const money = (v) => v != null ? `${v} €` : '—';
+  const usage = (v) => v != null ? `${v} ${unit}` : '—';
+
+  const field = (label, value) => `
+      <div class="flex justify-between items-start py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+          <span class="text-sm text-gray-500 dark:text-gray-400">${label}</span>
+          <span class="text-sm text-gray-900 dark:text-white font-medium text-right ml-4">${value}</span>
+      </div>`;
+
+  const section = (title, rows) => `
+      <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden mb-3">
+          <div class="px-5 py-3 border-b border-gray-100 dark:border-gray-700">
+              <h3 class="text-sm font-medium text-gray-900 dark:text-white">${title}</h3>
+          </div>
+          <div class="px-5 py-1">${rows}</div>
+      </div>`;
+
+  const i = extractedJson.invoice_details ?? {};
+  const c = extractedJson.customer ?? {};
+  const f = extractedJson.financials ?? {};
+  const s = extractedJson.consumption ?? {};
+
+  containerEl.innerHTML = `
+      <div class="space-y-3 mb-6">
+          <div class="flex items-center gap-2 mb-4">
+              <span class="text-xs px-2.5 py-1 rounded-full bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 font-medium">${extractedJson.category ?? 'Bill'}</span>
+              <h2 class="text-base font-medium text-gray-900 dark:text-white">Extracted details</h2>
+          </div>
+
+          ${section('Invoice details',
+              field('Vendor', val(i.vendor)) +
+              field('Invoice number', val(i.invoice_number)) +
+              field('Type', val(i.invoice_type)) +
+              field('Issue date', val(i.issue_date)) +
+              field('Due date', val(i.due_date)) +
+              field('Contract number', val(i.contract_number)) +
+              field('Provider number', val(i.provider_number)) +
+              field('Payment reference', val(i.payment_password)) +
+              field('Next measurement', val(i.next_measurement_date))
+          )}
+
+          ${section('Customer',
+              field('Name', val(c.full_name)) +
+              field('Address', val(c.address)) +
+              field('Property address', val(c.property_address))
+          )}
+
+          ${section('Financials',
+              field('Total payable', money(f.total_payable_amount)) +
+              field('Net consumption', money(f.net_consumption_amount)) +
+              field('Taxes & fees', money(f.total_taxes_and_fees)) +
+              field('Currency', val(f.currency))
+          )}
+
+          ${section('Consumption',
+              field('Total usage', usage(s.total_usage)) +
+              field('Period', s.period_days != null ? `${s.period_days} days` : '—') +
+              field('Daily average', usage(s.daily_average)) +
+              field('Cost per unit (net)', money(s.cost_per_unit_net)) +
+              field('Cost per unit (gross)', money(s.cost_per_unit_gross)) +
+              field('Cost per day (net)', money(s.cost_per_day_net)) +
+              field('Cost per day (gross)', money(s.cost_per_day_gross))
+          )}
+
+          <div class="bg-sky-50 dark:bg-sky-900/20 rounded-2xl border border-sky-100 dark:border-sky-800 p-5">
+              <h3 class="text-sm font-medium text-sky-900 dark:text-sky-200 mb-2">AI analysis</h3>
+              <p class="text-sm text-sky-800 dark:text-sky-300 leading-relaxed">${val(extractedJson.ai_analysis)}</p>
+          </div>
+      </div>`;
 }
-
-containerEl.innerHTML=`
-<h2>Importand Info</h2>
-<h3>Invoice Details:</h3>
-<h4>Category:${extractedJson.category}</h4>
-<p>Vendor:${extractedJson.invoice_details?.vendor ?? "Unknown"}</p>
-<p>Invoice Number:${extractedJson.invoice_details?.invoice_number ?? "Unknown"}</p>
-<p>Invoice Type:${extractedJson.invoice_details?.invoice_type ?? "Unknown"}</p>
-<p>Issue Date:${extractedJson.invoice_details?.issue_date ?? "Unknown"}</p>
-<p>Due Date:${extractedJson.invoice_details?.due_date ?? "Unknown"}</p>
-<p>Payment Password:${extractedJson.invoice_details?.payment_password ?? "Unknown"}</p>
-<p>Next Measurement Date:${extractedJson.invoice_details?.next_measurement_date ?? "Unknown"}</p>
-<p>Provider Number:${extractedJson.invoice_details?.provider_number ?? "Unknown"}</p>
-<p>Contract Number:${extractedJson.invoice_details?.contract_number ?? "Unknown"}</p><br>
-
-<h3>Customer Details:</h3>
-<p>Full Name:${extractedJson.customer?.full_name ?? "Unkown"}</p>
-<p>Address:${extractedJson.customer?.address ?? "Unkown"}</p>
-<p>Property Address:${extractedJson.customer?.property_address ?? "Unkown"}</p><br>
-
-<h3>Financials:</h3>
-<p>Total Payable Amount:${extractedJson.financials?.total_payable_amount ?? "Unkown"} €</p>
-<p>Net Consumption Amount:${extractedJson.financials?.net_consumption_amount ?? "Unkown"} €</p>
-<p>Total Taxes & Fees:${extractedJson.financials?.total_taxes_and_fees ?? "Unkown"} €</p>
-<p>Currency:${extractedJson.financials?.currency ?? "Unkown"} </p><br>
-
-<h3>Consumption Stats:</h3>
-<p>Total:${extractedJson.consumption?.total_usage ?? "Unkown"} ${unit}</p>
-<p>Period Days:${extractedJson.consumption?.period_days ?? "Unkown"} </p>
-<p>Daily Average :${extractedJson.consumption?.daily_average ?? "Unkown"} ${unit}</p>
-<p>Cost Per Unit Net:${extractedJson.consumption?.cost_per_unit_net ?? "Unkown"} €</p>
-<p>Cost Per Unit Gross:${extractedJson.consumption?.cost_per_unit_gross ?? "Unkown"} €</p>
-<p>Cost Per Day Net:${extractedJson.consumption?.cost_per_day_net ?? "Unkown"}  €</p>
-<p>Cost Per Day Gross:${extractedJson.consumption?.cost_per_day_gross ?? "Unkown"} €</p><br>
-
-<h3>Ai Analysis:</h3>
-<p id="ai_analysis" >${extractedJson.ai_analysis}</p>
-`
-}   
-
-/*
-{
-  "invoice_details": {
-    "vendor": "ΔΕΗ Α.Ε. (Public Power Corporation S.A.)",
-    "invoice_number": "1481152881",
-    "invoice_type": "Εκκαθαριστικός (Settlement Bill)",
-    "issue_date": "04/03/2026",
-    "due_date": "26/03/2026",
-    "payment_password": "RF68907738000300015852167",
-    "next_measurement_date": "01/04/2026",
-    "provider_number": "3 31608537-01 4",
-    "contract_number": "300015852167"
-  },
-  "customer": {
-    "full_name": "KIRAOU MARTSEL LEON",
-    "address": "CHALKIS 9-KYKLADON, 133 41 ANO LIOSIA",
-    "property_address": "BESKAKI, 200 03 AG. THEODOROI"
-  },
-  "financials": {
-    "total_payable_amount": 16,
-    "net_consumption_amount": 19.67,
-    "total_taxes_and_fees": 15.01,
-    "currency": "EUR"
-  },
-  "consumption_stats": {
-    "total_kwh": 53,
-    "period_days": 62,
-    "daily_avg_kwh": 0.85,
-    "cost_per_kwh_net": 0.371,
-    "cost_per_kwh_gross": 0.567
-  },
-  "ai_analysis": "This is a settlement bill (Εκκαθαριστικός) based on actual meter readings (2243 to 2296). 
-  The consumption is very low (53 kWh over 62 days), suggesting a secondary residence or a period of minimal activity. 
-  The final amount of €16.00 is reached after deducting a previous estimated payment (Έναντι) of €18.68. 
-  The bill includes municipal taxes for the Loutraki - Ag. Theodoroi region and a 'Green Pass Home' surcharge. Payment is due by March 26, 2026."
-  */

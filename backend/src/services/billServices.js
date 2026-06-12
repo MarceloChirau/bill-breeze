@@ -12,7 +12,7 @@ invoiceData.invoice_details.issue_date=  parseDate(invoiceData.invoice_details.i
 invoiceData.invoice_details.due_date=  parseDate(invoiceData.invoice_details.due_date)
 const update=invoiceData;
 const bill=await Bill.findOneAndUpdate(filter,update,{
-    new:true,
+    returnDocument:'after',
     upsert:true
 })
 return bill;
