@@ -6,11 +6,19 @@ import mongoose from 'mongoose';
 
 const PORT=process.env.PORT || 3000;
 
-app.listen(PORT,()=>{
-    console.log('server runs at port:',`${PORT}`)
-})
+if (!process.env.CORRECT_MONGO_DB_LINK) {
+    console.error('MONGO_DB_LINK is missing from .env — cannot connect to MongoDB');
+    process.exit(1);
+}
 
-mongoose.connect(process.env.MONGO_DB_LINK).then((result)=>{
-    console.log('server connected to db!')
-
-}).catch(err=>console.error('Error:',err))
+mongoose.connect(process.env.CORRECT_MONGO_DB_LINK)
+    .then(() => {
+        console.log('server connected to db!');
+        app.listen(PORT, () => {
+            console.log('server runs at port:', `${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error('MongoDB connection failed:', err.message);
+        process.exit(1);
+    });

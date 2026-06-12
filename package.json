@@ -1,4 +1,14 @@
 {
+  
+"name": "bill-breeze-root",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npm run start --prefix backend",
+    "dev": "npm run dev --prefix backend",
+    "tailwind:watch": "tailwindcss -i ./public/src-input.css -o ./public/dist-output.css --watch"
+  }
+  ,
+  
   "dependencies": {
     "@google/genai": "^1.49.0",
     "firebase": "^12.11.0"

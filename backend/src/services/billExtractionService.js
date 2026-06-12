@@ -31,11 +31,11 @@ obj.consumption.daily_average = null;
 obj.consumption.cost_per_unit_net = null;
 obj.consumption.cost_per_day_net = null;
 obj.consumption.cost_per_day_gross = null;
-// 1. Calculate Net Amount
-const netAmount = (obj.financials.charges_supply_vendor + obj.financials.regulated_charges).toFixed(3);
+// 1. Calculate Net Amount (.toFixed returns a string — keep numbers for math)
+const netAmount = Number((obj.financials.charges_supply_vendor + obj.financials.regulated_charges).toFixed(3));
 obj.financials.net_consumption_amount = netAmount;
-obj.financials.total_taxes_and_fees=obj.financials.municipality_fees+obj.financials.vat;
-obj.financials.payable_amount=netAmount+obj.financials.total_taxes_and_fees-obj.financials.advance_charges;
+obj.financials.total_taxes_and_fees = obj.financials.municipality_fees + obj.financials.vat;
+obj.financials.payable_amount = Number((netAmount + obj.financials.total_taxes_and_fees - obj.financials.advance_charges).toFixed(2));
 
 // // 2. Safely calculate consumption stats (using your consumption object)
 if (obj.consumption.total_usage > 0 && obj.consumption.period_days > 0) {
